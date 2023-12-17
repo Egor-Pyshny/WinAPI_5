@@ -61,7 +61,7 @@ vector<string> mergeSort(vector<string>* strs, int size)
 
 int main()
 {
-    int threads_count = 3;
+    int threads_count = 5;
     
     Queue queue;
     vector<string> strings;

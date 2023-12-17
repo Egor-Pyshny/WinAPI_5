@@ -39,8 +39,8 @@ vector<HANDLE> Queue::process_queue(ThreadPool pool)
 		{
 			MyTask task = tasks->front();
 			tasks->pop();
-			pool.pool[th_num].functions->push_back(task.function);
-			pool.pool[th_num].lpParams->push_back(task.lpParam);
+			pool.pool[th_num].functions.push_back(task.function);
+			pool.pool[th_num].lpParams.push_back(task.lpParam);
 			th_num = th_num == size - 1 ? 0 : ++th_num;
 		}
 	}

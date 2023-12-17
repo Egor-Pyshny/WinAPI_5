@@ -8,8 +8,8 @@ void ThreadPool::clear_pool()
 	for (int i = 0; i < this->size; i++) {
 		try {
 			MyThread th = this->pool[i];
-			th.functions->clear();
-			th.lpParams->clear();
+			th.functions.clear();
+			th.lpParams.clear();
 			CloseHandle(th.processHandle);
 			th.processHandle = NULL;
 		}
@@ -28,11 +28,16 @@ DWORD WINAPI MyThreadProc(LPVOID lpParam)
 {
 	ThreadPool::MyThread* th = (ThreadPool::MyThread*)(lpParam);
 	DWORD tid = GetThreadId(th->processHandle);
-	cout << "Thread start " << tid << endl;
-	for (int i = 0; i < th->functions->size(); i++) {
-		(th->functions->at(i))(th->lpParams->at(i));
+	cout << "\nThread start " << tid << endl;
+	try {
+		for (int i = 0; i < th->functions.size(); i++) {
+			(th->functions.at(i))(th->lpParams.at(i));
+		}
+		cout << "\nThread end " << tid << endl;
 	}
-	cout << "Thread end " << tid << endl;
+	catch (...) {
+		cout << "\nEXCEPTION IN THREAD " << th->processHandle << endl;
+	}
 	return 0;
 }
 
@@ -40,20 +45,18 @@ vector<HANDLE> ThreadPool::execute()
 {
 	vector<HANDLE> res;
 	for (int i = 0; i < this->size; i++) {
-		
-		LPVOID a = &pool.at(i);
-		//cout << "POOL" << i << "ADDRESS  " << a << endl;
-		HANDLE h = CreateThread(
+		MyThread* th = &(pool.at(i));
+		th->processHandle = CreateThread(
 			NULL,
 			0,
 			MyThreadProc,
-			a,
+			th,
 			0,
 			NULL
 		);
-		pool[i].processHandle = h;
-		Sleep(1);
-		res.push_back(h);
+		cout << "\nPOOL" << i << "HANDLE  " << th->processHandle << endl;
+		pool.at(i).processHandle = th->processHandle;
+		res.push_back(th->processHandle);
 	}
 	return res;
 }
@@ -84,7 +87,7 @@ ThreadPool::MyThread::MyThread()
 
 ThreadPool::MyThread::MyThread(vector<Func>* f, vector<LPVOID>* lps, HANDLE h)
 {
-	this->functions = f;
-	this->lpParams = lps;
+	this->functions = *f;
+	this->lpParams = *lps;
 	this->processHandle = h;
 }

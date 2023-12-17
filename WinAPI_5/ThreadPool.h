@@ -14,8 +14,8 @@ private:
 	typedef void (*Func)(LPVOID);
 	struct MyThread
 	{
-		vector<Func>* functions = new vector<Func>();
-		vector<LPVOID>* lpParams = new vector<LPVOID>();
+		vector<Func> functions;
+		vector<LPVOID> lpParams;
 		HANDLE processHandle = NULL;
 		public:
 			MyThread();
